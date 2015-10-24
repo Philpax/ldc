@@ -670,6 +670,12 @@ public:
         llvm::BasicBlock* finallybb =
             llvm::BasicBlock::Create(irs->context(), "finally", irs->topfunc());
         irs->scope() = IRScope(finallybb);
+
+        // Generate a call to _d_eh_destroy_exception
+        llvm::Function* destroyFn = LLVM_D_GetRuntimeFunction(Loc(),
+            irs->module, "_d_eh_destroy_exception");
+        irs->ir->CreateCall(destroyFn, irs->ir->CreateLoad(irs->func()->getOrCreateEhPtrSlot()));
+
         irs->DBuilder.EmitBlockStart(stmt->finalbody->loc);
         stmt->finalbody->accept(this);
         irs->DBuilder.EmitBlockEnd();
@@ -693,6 +699,7 @@ public:
             irs->func()->scopes->runCleanups(cleanupBefore, successbb);
             irs->scope() = IRScope(successbb);
         }
+
         irs->func()->scopes->popCleanups(cleanupBefore);
     }
 
