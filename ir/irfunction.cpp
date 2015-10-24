@@ -466,6 +466,10 @@ void IrFunction::setAlwaysInline() {
 llvm::AllocaInst* IrFunction::getOrCreateEhPtrSlot() {
     if (!ehPtrSlot) {
         ehPtrSlot = DtoRawAlloca(getVoidPtrType(), 0, "eh.ptr");
+        // Initialize eh.ptr to null
+        llvm::StoreInst* si = new llvm::StoreInst(
+            llvm::ConstantPointerNull::get(getVoidPtrType()), ehPtrSlot, gIR->topallocapoint());
+        (void)si;
     }
     return ehPtrSlot;
 }

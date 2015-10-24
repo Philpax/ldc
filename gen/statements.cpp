@@ -817,6 +817,14 @@ public:
         }
 
         irs->scope() = IRScope(endbb);
+
+        // Generate a call to _d_eh_destroy_exception if necessary
+        if (irs->func()->ehPtrSlot)
+        {
+            llvm::Function* destroyFn = LLVM_D_GetRuntimeFunction(Loc(),
+                irs->module, "_d_eh_destroy_exception");
+            irs->ir->CreateCall(destroyFn, irs->ir->CreateLoad(irs->func()->ehPtrSlot));
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////

@@ -968,6 +968,14 @@ static void LLVM_D_BuildRuntimeModule()
         llvm::Function::Create(fty, llvm::GlobalValue::ExternalLinkage, fname, M);
     }
 
+    // void _d_eh_destroy_exception(ptr exc_struct)
+    {
+        llvm::StringRef fname("_d_eh_destroy_exception");
+        LLType *types[] = { voidPtrTy };
+        LLFunctionType* fty = llvm::FunctionType::get(voidTy, types, false);
+        llvm::Function::Create(fty, llvm::GlobalValue::ExternalLinkage, fname, M);
+    }
+
     // void _d_eh_enter_catch()
     {
         llvm::StringRef fname("_d_eh_enter_catch");
